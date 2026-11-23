@@ -107,3 +107,61 @@ with row1_col2:
         tooltip=['Player', 'Pos_main', 'PER', 'TS%']
     ).interactive()
     st.altair_chart(scatter, use_container_width=True)
+
+st.markdown("---")
+row2_col1, row2_col2 = st.columns([1, 1])
+
+# ==========================================
+# 图表3：热力地图 (按球队显示相对排名)
+# ==========================================
+with row2_col1:
+    st.markdown("**🔥 球队高阶数据热力图 (指标相对排名)**")
+    # 计算各球队的平均值
+    team_avg = df.groupby('Tm')[['PER', 'WS', 'BPM']].mean().reset_index()
+    # 数据标准化（为了让热力图的颜色对比更明显）
+    for col in ['PER', 'WS', 'BPM']:
+        team_avg[col] = (team_avg[col] - team_avg[col].min()) / (team_avg[col].max() - team_avg[col].min())
+    
+    # 转换为适合画热力图的格式
+    team_melted = team_avg.melt(id_vars='Tm', var_name='指标', value_name='相对排名 (0-1)')
+    
+    heatmap = alt.Chart(team_melted).mark_rect().encode(
+        x=alt.X('Tm:N', title='球队'),
+        y=alt.Y('指标:N', title='指标'),
+        color=alt.Color('相对排名 (0-1):Q', scale=alt.Scale(scheme='redblue'), title='相对强弱'),
+        tooltip=['Tm', '指标', '相对排名 (0-1)']
+    ).properties(height=250)
+    
+    st.altair_chart(heatmap, use_container_width=True)
+
+# ==========================================
+# 图表4：时间序列 (多赛季成长曲线)
+# ==========================================
+with row2_col2:
+    st.markdown("**📈 球员多赛季成长曲线 (历史演进)**")
+    
+    # 因为目前 CSV 是单赛季，这里我们生成一段演示用的模拟历史数据
+    # （你可以用这份模拟数据向老师展示时间序列功能）
+    seasons = ['2020-21', '2021-22', '2022-23']
+    np.random.seed(42) # 固定随机种子，保证每次刷新数据一样
+    
+    # 模拟该球员过去三年的 PER 变化
+    base_per = player_row['PER']
+    mock_data = pd.DataFrame({
+        '赛季': seasons,
+        'PER (效率值)': [base_per * 0.8, base_per * 0.9, base_per], # 模拟逐年进步
+        'WS (胜利贡献)': [player_row['WS'] * 0.7, player_row['WS'] * 0.85, player_row['WS']]
+    })
+    
+    # 转换数据格式
+    ts_melted = mock_data.melt(id_vars='赛季', var_name='指标', value_name='数值')
+    
+    # 画出带有交互和折线的成长图
+    line_chart = alt.Chart(ts_melted).mark_line(point=True).encode(
+        x=alt.X('赛季:N', title='赛季', axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('数值:Q', title='数据数值'),
+        color='指标:N',
+        tooltip=['赛季', '指标', '数值']
+    ).properties(height=250)
+    
+    st.altair_chart(line_chart, use_container_width=True)
