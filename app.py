@@ -30,10 +30,26 @@ pos_row = pos_avg[pos_avg['Pos_main'] == player_pos].iloc[0]
 st.markdown("---")
 col_img, col_info = st.columns([1, 4])
 
-with col_img:
-    # 因为抓取真实照片网络可能不稳定，这里用 Streamlit 官方提供的优雅占位图，绝对不报错
-    st.image(f"https://api.dicebear.com/7.x/initials/svg?seed={selected_player}&backgroundColor=1f77b4", width=120)
-
+    # 建立一个球员名字到 NBA 官方照片 ID 的映射字典
+    player_photo_ids = {
+        "Nikola Jokić": "203999",
+        "Joel Embiid": "203954",
+        "Giannis Antetokounmpo": "203507",
+        "Luka Dončić": "1629029",
+        "Jayson Tatum": "1628369",
+        "Stephen Curry": "201939",
+        "Devin Booker": "1626164",
+        "Donovan Mitchell": "1628378"
+    }
+    
+    # 获取当前选中球员的照片 ID
+    photo_id = player_photo_ids.get(selected_player, "2544") 
+    
+    # NBA 官方 CDN 图床链接 (高清人像)
+    img_url = f"https://cdn.nba.com/headshots/nba/latest/1040x760/{photo_id}.png"
+    
+    # 展示图片
+    st.image(img_url, width=200, caption=selected_player)
 with col_info:
     st.markdown(f"### 👤 {selected_player}")
     st.markdown(f"**球队:** {player_row['Tm']} | **位置:** {player_pos}")
