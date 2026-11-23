@@ -26,14 +26,28 @@ player_row = df[df['Player'] == selected_player].iloc[0]
 player_pos = player_row['Pos_main']
 pos_row = pos_avg[pos_avg['Pos_main'] == player_pos].iloc[0]
 
-st.subheader(f"👤 球员档案: {selected_player} ({player_pos})")
-col1, col2, col3, col4, col5, col6 = st.columns(6)
-col1.metric("PER (效率值)", f"{player_row['PER']:.1f}")
-col2.metric("WS (胜利贡献)", f"{player_row['WS']:.1f}")
-col3.metric("BPM (正负值贡献)", f"{player_row['BPM']:.1f}")  # 新增的
-col4.metric("TS% (真实命中率)", f"{player_row['TS%']:.3f}")
-col5.metric("G (出场数)", f"{player_row['G']:.0f}")
-col6.metric("MP (总时间)", f"{player_row['MP']:.0f}")
+# 替换原本的 st.subheader 和 col1-col6 那几行
+st.markdown("---")
+col_img, col_info = st.columns([1, 4])
+
+with col_img:
+    # 因为抓取真实照片网络可能不稳定，这里用 Streamlit 官方提供的优雅占位图，绝对不报错
+    st.image(f"https://api.dicebear.com/7.x/initials/svg?seed={selected_player}&backgroundColor=1f77b4", width=120)
+
+with col_info:
+    st.markdown(f"### 👤 {selected_player}")
+    st.markdown(f"**球队:** {player_row['Tm']} | **位置:** {player_pos}")
+    
+    # 数据指标横排
+    m1, m2, m3, m4, m5, m6 = st.columns(6)
+    m1.metric("PER (效率值)", f"{player_row['PER']:.1f}")
+    m2.metric("WS (胜利贡献)", f"{player_row['WS']:.1f}")
+    m3.metric("BPM (正负值)", f"{player_row['BPM']:.1f}")
+    m4.metric("TS% (真实命中率)", f"{player_row['TS%']:.3f}")
+    m5.metric("G (出场数)", f"{player_row['G']:.0f}")
+    m6.metric("MP (总时间)", f"{player_row['MP']:.0f}")
+
+st.markdown("---")
 
 st.divider()
 
