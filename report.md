@@ -1,4 +1,5 @@
 # NBA 球员赛季表现分析与可视化报告
+<img width="2798" height="1392" alt="1" src="https://github.com/user-attachments/assets/e0486983-15d5-410f-b17c-7a5df3a137ba" />
 
 ## 一、 项目概述与数据说明
 本项目基于 2022-2023 赛季 NBA 球员数据，构建了一个交互式可视化仪表盘。
@@ -16,6 +17,8 @@
 4.  **球队热力图**：按球队聚合数据，展示各支球队在核心指标上的相对强弱（颜色越红代表越强）。
 5.  **走势折线图**：对比当前选中球员与全联盟平均水平的数据走势。
 6.  **侧边栏筛选**：通过下拉菜单，可一键切换查看不同球员的所有联动图表。
+<img width="2734" height="1502" alt="2" src="https://github.com/user-attachments/assets/dc820f22-6d55-4308-aa3d-6ac4687a582a" />
+<img width="2776" height="1472" alt="3" src="https://github.com/user-attachments/assets/3d856187-f742-4951-b2f8-bba5b02fe362" />
 
 ## 三、 核心洞察与对球队的价值评估
 
