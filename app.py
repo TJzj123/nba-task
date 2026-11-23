@@ -139,30 +139,34 @@ with row2_col1:
 # 图表4：时间序列 (多赛季成长曲线)
 # ==========================================
 with row2_col2:
-    st.markdown("**📈 球员多赛季成长曲线 (历史演进)**")
+    st.markdown("**📊 球员与同位置球员数据对比**")
     
-    # 因为目前 CSV 是单赛季，这里我们生成一段演示用的模拟历史数据
-    seasons = ['2020-21', '2021-22', '2022-23']
+    # 筛选出同位置的所有球员
+    pos_df = df[df['Pos_main'] == player_pos]
     
-    # 模拟该球员过去三年的 PER 变化
-    base_per = player_row['PER']
-    base_ws = player_row['WS']
+    # 转换成 Altair 喜欢的格式
+    pos_melted = pos_df.melt(id_vars=['Player', 'Tm'], value_vars=['PER', 'WS', 'BPM'], var_name='指标', value_name='数值')
     
-    mock_data = pd.DataFrame({
-        '赛季': seasons,
-        'PER (效率值)': [base_per * 0.8, base_per * 0.9, base_per], # 模拟逐年进步
-        'WS (胜利贡献)': [base_ws * 0.7, base_ws * 0.85, base_ws]
-    })
-    
-    # 转换数据格式
-    ts_melted = mock_data.melt(id_vars='赛季', var_name='指标', value_name='数值')
-    
-    # 画出带有交互和折线的成长图
-    line_chart = alt.Chart(ts_melted).mark_line(point=True).encode(
-        x=alt.X('赛季:N', title='赛季', axis=alt.Axis(labelAngle=0)),
+    # 画柱状图
+    bar_chart = alt.Chart(pos_melted).mark_bar().encode(
+        x=alt.X('Player:N', title='球员', axis=alt.Axis(labelAngle=-45)),
         y=alt.Y('数值:Q', title='数据数值'),
-        color='指标:N',
-        tooltip=['赛季', '指标', '数值']
+        color=alt.Color('指标:N', title='指标'),
+        xOffset='指标:N', # 把三个指标的柱子并排
+        tooltip=['Player', 'Tm', '指标', '数值']
     ).properties(height=250)
     
-    st.altair_chart(line_chart, use_container_width=True)
+    # 高亮显示当前选中的球员（用透明度降低其他人）
+    highlight = alt.Chart(pos_melted).mark_bar().encode(
+        x=alt.X('Player:N'),
+        y=alt.Y('数值:Q'),
+        color=alt.Color('指标:N'),
+        xOffset='指标:N',
+        opacity=alt.condition(
+            alt.datum.Player == selected_player,
+            alt.value(1),  # 选中的球员不透明
+            alt.value(0.3) # 其他人变半透明
+        )
+    )
+    
+    st.altair_chart(highlight, use_container_width=True)
