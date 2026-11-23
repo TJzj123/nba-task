@@ -139,38 +139,37 @@ with row2_col1:
 # 图表4：时间序列 (多赛季成长曲线)
 # ==========================================
 with row2_col2:
-    st.markdown("**📈 球员赛季指标走势对比 (真实数据)**")
+    st.markdown("**📈 球员赛季指标走势对比 (vs 全联盟平均)**")
     
-    # 我们提取当前的球员数据和位置平均水平，做成两条时间序列（或者叫跨度分析）
     categories = ['PER', 'WS', 'BPM']
     
-    # 整理当前球员的真实数据
+    # 1. 当前球员的真实数据
     player_trend = pd.DataFrame({
         '指标': categories,
         '数值': [player_row[c] for c in categories],
         '类型': '当前球员'
     })
     
-    # 整理同位置的平均数据
-    avg_trend = pd.DataFrame({
+    # 2. 提取全联盟的平均值 (而不是位置平均)
+    league_avg = df[['PER', 'WS', 'BPM']].mean()
+    league_trend = pd.DataFrame({
         '指标': categories,
-        '数值': [pos_row[c] for c in categories],
-        '类型': '位置平均'
+        '数值': [league_avg[c] for c in categories],
+        '类型': '全联盟平均'
     })
     
     # 合并数据
-    trend_data = pd.concat([player_trend, avg_trend])
+    trend_data = pd.concat([player_trend, league_trend])
     
-    # 画折线图（用指标作为横轴）
+    # 画图
     line_chart = alt.Chart(trend_data).mark_line(
-        point=alt.OverlayMarkDef(size=100, filled=True), 
+        point=alt.OverlayMarkDef(size=120, filled=True), # 点画大一点
         strokeWidth=3
     ).encode(
         x=alt.X('指标:N', title='核心指标', axis=alt.Axis(labelAngle=0)),
         y=alt.Y('数值:Q', title='数值大小'),
-        color=alt.Color('类型:N', scale=alt.Scale(range=['#1f77b4', '#ff7f0e']), title='对象'),
+        color=alt.Color('类型:N', scale=alt.Scale(range=['#ff7f0e', '#1f77b4']), title='对象'), # 当前球员用橙色，平均用蓝色
         tooltip=['指标', '类型', '数值']
     ).properties(height=300)
     
     st.altair_chart(line_chart, use_container_width=True)
-    st.caption("注：由于数据源为单赛季切片，此处展示该球员在该赛季各项指标与其同位置平均水平的趋势对比。")
