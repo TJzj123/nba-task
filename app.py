@@ -139,34 +139,38 @@ with row2_col1:
 # 图表4：时间序列 (多赛季成长曲线)
 # ==========================================
 with row2_col2:
-    st.markdown("**📊 球员与同位置球员数据对比**")
+    st.markdown("**📈 球员赛季指标走势对比 (真实数据)**")
     
-    # 筛选出同位置的所有球员
-    pos_df = df[df['Pos_main'] == player_pos]
+    # 我们提取当前的球员数据和位置平均水平，做成两条时间序列（或者叫跨度分析）
+    categories = ['PER', 'WS', 'BPM']
     
-    # 转换成 Altair 喜欢的格式
-    pos_melted = pos_df.melt(id_vars=['Player', 'Tm'], value_vars=['PER', 'WS', 'BPM'], var_name='指标', value_name='数值')
+    # 整理当前球员的真实数据
+    player_trend = pd.DataFrame({
+        '指标': categories,
+        '数值': [player_row[c] for c in categories],
+        '类型': '当前球员'
+    })
     
-    # 画柱状图
-    bar_chart = alt.Chart(pos_melted).mark_bar().encode(
-        x=alt.X('Player:N', title='球员', axis=alt.Axis(labelAngle=-45)),
-        y=alt.Y('数值:Q', title='数据数值'),
-        color=alt.Color('指标:N', title='指标'),
-        xOffset='指标:N', # 把三个指标的柱子并排
-        tooltip=['Player', 'Tm', '指标', '数值']
-    ).properties(height=250)
+    # 整理同位置的平均数据
+    avg_trend = pd.DataFrame({
+        '指标': categories,
+        '数值': [pos_row[c] for c in categories],
+        '类型': '位置平均'
+    })
     
-    # 高亮显示当前选中的球员（用透明度降低其他人）
-    highlight = alt.Chart(pos_melted).mark_bar().encode(
-        x=alt.X('Player:N'),
-        y=alt.Y('数值:Q'),
-        color=alt.Color('指标:N'),
-        xOffset='指标:N',
-        opacity=alt.condition(
-            alt.datum.Player == selected_player,
-            alt.value(1),  # 选中的球员不透明
-            alt.value(0.3) # 其他人变半透明
-        )
-    )
+    # 合并数据
+    trend_data = pd.concat([player_trend, avg_trend])
     
-    st.altair_chart(highlight, use_container_width=True)
+    # 画折线图（用指标作为横轴）
+    line_chart = alt.Chart(trend_data).mark_line(
+        point=alt.OverlayMarkDef(size=100, filled=True), 
+        strokeWidth=3
+    ).encode(
+        x=alt.X('指标:N', title='核心指标', axis=alt.Axis(labelAngle=0)),
+        y=alt.Y('数值:Q', title='数值大小'),
+        color=alt.Color('类型:N', scale=alt.Scale(range=['#1f77b4', '#ff7f0e']), title='对象'),
+        tooltip=['指标', '类型', '数值']
+    ).properties(height=300)
+    
+    st.altair_chart(line_chart, use_container_width=True)
+    st.caption("注：由于数据源为单赛季切片，此处展示该球员在该赛季各项指标与其同位置平均水平的趋势对比。")
