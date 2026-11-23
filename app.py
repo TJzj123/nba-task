@@ -59,21 +59,43 @@ st.markdown("---")
 row1_col1, row1_col2 = st.columns([1, 1])
 
 with row1_col1:
-    st.markdown("**🕸️ 球员能力雷达图 (相对位置平均值百分比)**")
-    st.caption("注：100% 代表等于同位置平均水平，>100% 代表高于平均，<100% 代表低于平均")
+    st.markdown("**🕸️ 球员能力雷达图 (对比同位置平均)**")
     
     categories = ['PER', 'WS', 'TS%']
-    player_relative = [(player_row[c] / pos_row[c]) * 100 for c in categories]
+    
+    # 提取球员的绝对数值和位置平均的绝对数值
+    player_values = [player_row[c] for c in categories]
+    avg_values = [pos_row[c] for c in categories]
     
     fig_radar = go.Figure()
+    
+    # 画球员的数据（蓝色实线，有填充）
     fig_radar.add_trace(go.Scatterpolar(
-        r=player_relative, theta=categories, fill='toself', name=selected_player
+        r=player_values, 
+        theta=categories, 
+        fill='toself', 
+        name=selected_player,
+        line_color='#1f77b4'
     ))
+    
+    # 画位置平均的数据（橙色虚线，无填充，方便看底下的球员数据）
     fig_radar.add_trace(go.Scatterpolar(
-        r=[100, 100, 100], theta=categories, fill='toself', name='位置平均值 (100%)',
-        line=dict(dash='dot', color='red'), opacity=0.3
+        r=avg_values, 
+        theta=categories, 
+        fill='toself', 
+        name=f'{player_pos} 位置平均',
+        line=dict(dash='dot', color='#ff7f0e'),
+        opacity=0.4
     ))
-    fig_radar.update_layout(polar=dict(radialaxis=dict(visible=True)), margin=dict(t=30, b=30))
+    
+    # 让雷达图的圈圈根据最大值自动缩放，这样三条轴都能撑满
+    max_val = max(player_values + avg_values)
+    fig_radar.update_layout(
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0, max_val * 1.1])
+        ), 
+        margin=dict(t=30, b=30)
+    )
     st.plotly_chart(fig_radar, use_container_width=True)
 
 with row1_col2:
