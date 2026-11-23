@@ -16,7 +16,7 @@ def load_data():
     return df.dropna(subset=['PER', 'WS', 'TS%', 'BPM'])
 
 df = load_data()
-pos_avg = df.groupby('Pos_main')[['PER', 'WS', 'TS%']].mean().reset_index()
+pos_avg = df.groupby('Pos_main')[['PER', 'WS', 'TS%', 'BPM']].mean().reset_index()
 
 st.sidebar.header("交互控制面板")
 selected_player = st.sidebar.selectbox("选择球员", df['Player'].unique())
