@@ -2,56 +2,19 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 import plotly.graph_objects as go
-import requests
-from bs4 import BeautifulSoup
-import time
 
 st.set_page_config(page_title="NBA 球员表现仪表盘", layout="wide")
 st.title("🏀 NBA 球员赛季表现分析仪表盘")
 
-@st.cache_data(show_spinner="正在从 Basketball Reference 抓取球员数据，请稍候...")
-def fetch_data():
-    urls = [
-        'https://www.basketball-reference.com/players/j/jokicni01.html',
-        'https://www.basketball-reference.com/players/e/embiijo01.html',
-        'https://www.basketball-reference.com/players/g/giannisa01.html',
-        'https://www.basketball-reference.com/players/d/doncilu01.html',
-        'https://www.basketball-reference.com/players/t/tatumja01.html',
-        'https://www.basketball-reference.com/players/c/curryst01.html'
-    ]
-    
-    all_dfs = []
-    for url in urls:
-        try:
-            res = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, timeout=10)
-            soup = BeautifulSoup(res.content, 'html.parser')
-            for comment in soup.find_all(string=lambda t: isinstance(t, str)):
-                if 'id="advanced"' in str(comment):
-                    comment_soup = BeautifulSoup(str(comment), 'html.parser')
-                    table = comment_soup.find('table', {'id': 'advanced'})
-                    if table:
-                        df = pd.read_html(str(table))[0]
-                        df = df[df['Player'] != 'Player']
-                        all_dfs.append(df)
-                        break
-            time.sleep(1)
-        except Exception as e:
-            pass
-            
-    if not all_dfs:
-        return pd.DataFrame()
-        
-    df_all = pd.concat(all_dfs, ignore_index=True)
-    df_all['Pos_main'] = df_all['Pos'].astype(str).str.split('-').str[0]
+@st.cache_data
+def load_data():
+    df = pd.read_csv('players_advanced.csv')
+    df['Pos_main'] = df['Pos'].astype(str).str.split('-').str[0]
     for col in ['PER', 'WS', 'TS%', 'G', 'MP']:
-        df_all[col] = pd.to_numeric(df_all[col], errors='coerce')
-    return df_all.dropna(subset=['PER', 'WS', 'TS%'])
+        df[col] = pd.to_numeric(df[col], errors='coerce')
+    return df.dropna(subset=['PER', 'WS', 'TS%'])
 
-df = fetch_data()
-if df.empty:
-    st.error("数据抓取失败，可能是网站限制了云端 IP。请稍后再试。")
-    st.stop()
-
+df = load_data()
 pos_avg = df.groupby('Pos_main')[['PER', 'WS', 'TS%']].mean().reset_index()
 
 st.sidebar.header("交互控制面板")
