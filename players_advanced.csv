@@ -1,9 +1,9 @@
-Player,Pos,PER,WS,TS%,G,MP,BPM
-Nikola Jokić,C,31.5,12.7,0.704,72,2492,11.6
-Joel Embiid,C,31.4,11.2,0.655,66,2318,8.7
-Giannis Antetokounmpo,PF,29.1,11.0,0.605,63,2023,10.5
-Luka Dončić,PG,28.5,6.4,0.609,66,2343,8.2
-Jayson Tatum,SF,23.9,9.4,0.604,74,2732,6.6
-Stephen Curry,PG,22.7,7.2,0.644,56,1946,6.5
-Devin Booker,SG,20.1,6.2,0.600,53,1826,3.1
-Donovan Mitchell,SG,21.6,5.9,0.614,68,2402,4.8
+Player,Pos,PER,WS,TS%,G,MP,BPM,Tm
+Nikola Jokić,C,31.5,12.7,0.704,72,2492,11.6,DEN
+Joel Embiid,C,31.4,11.2,0.655,66,2318,8.7,PHI
+Giannis Antetokounmpo,PF,29.1,11.0,0.605,63,2023,10.5,MIL
+Luka Dončić,PG,28.5,6.4,0.609,66,2343,8.2,DAL
+Jayson Tatum,SF,23.9,9.4,0.604,74,2732,6.6,BOS
+Stephen Curry,PG,22.7,7.2,0.644,56,1946,6.5,GSW
+Devin Booker,SG,20.1,6.2,0.600,53,1826,3.1,PHX
+Donovan Mitchell,SG,21.6,5.9,0.614,68,2402,4.8,CLE
