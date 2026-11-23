@@ -1,3 +1,4 @@
+import numpy as np
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -141,16 +142,16 @@ with row2_col2:
     st.markdown("**📈 球员多赛季成长曲线 (历史演进)**")
     
     # 因为目前 CSV 是单赛季，这里我们生成一段演示用的模拟历史数据
-    # （你可以用这份模拟数据向老师展示时间序列功能）
     seasons = ['2020-21', '2021-22', '2022-23']
-    np.random.seed(42) # 固定随机种子，保证每次刷新数据一样
     
     # 模拟该球员过去三年的 PER 变化
     base_per = player_row['PER']
+    base_ws = player_row['WS']
+    
     mock_data = pd.DataFrame({
         '赛季': seasons,
         'PER (效率值)': [base_per * 0.8, base_per * 0.9, base_per], # 模拟逐年进步
-        'WS (胜利贡献)': [player_row['WS'] * 0.7, player_row['WS'] * 0.85, player_row['WS']]
+        'WS (胜利贡献)': [base_ws * 0.7, base_ws * 0.85, base_ws]
     })
     
     # 转换数据格式
