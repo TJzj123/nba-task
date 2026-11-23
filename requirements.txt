@@ -1,0 +1,6 @@
+plotly
+altair
+beautifulsoup4
+lxml
+requests
+pandas
