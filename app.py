@@ -27,12 +27,13 @@ player_pos = player_row['Pos_main']
 pos_row = pos_avg[pos_avg['Pos_main'] == player_pos].iloc[0]
 
 st.subheader(f"👤 球员档案: {selected_player} ({player_pos})")
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 col1.metric("PER (效率值)", f"{player_row['PER']:.1f}")
 col2.metric("WS (胜利贡献)", f"{player_row['WS']:.1f}")
-col3.metric("TS% (真实命中率)", f"{player_row['TS%']:.3f}")
-col4.metric("G (出场数)", f"{player_row['G']:.0f}")
-col5.metric("MP (总时间)", f"{player_row['MP']:.0f}")
+col3.metric("BPM (正负值贡献)", f"{player_row['BPM']:.1f}")  # 新增的
+col4.metric("TS% (真实命中率)", f"{player_row['TS%']:.3f}")
+col5.metric("G (出场数)", f"{player_row['G']:.0f}")
+col6.metric("MP (总时间)", f"{player_row['MP']:.0f}")
 
 st.divider()
 
